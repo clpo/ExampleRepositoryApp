@@ -1,5 +1,16 @@
 <resources>
-    <string name="app_name">Example Repository App</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="app_name">Example Github Repository App</string>
+    <string name="enter_search">Please enter a search query</string>
+
+    <string name="repository_name">Name</string>
+    <string name="repository_description">Description</string>
+    <string name="is_private">Is private</string>
+    <string name="github_link">Github link</string>
+    <string name="date_created">Date created</string>
+    <string name="date_updated">Date updated</string>
+    <string name="language">Language</string>
+    <string name="number_of_forks">Number of forks</string>
+    <string name="open_issues">Open issues</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

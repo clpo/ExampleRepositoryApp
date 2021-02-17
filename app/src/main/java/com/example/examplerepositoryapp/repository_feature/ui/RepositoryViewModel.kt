@@ -14,24 +14,19 @@ class RepositoryViewModel : ViewModel() {
     //Should use dependencies injection here, such as Dagger2, but doesn't seem worth it for this small project
     private val repositoryRepository: RepositoryRepository = RepositoryRepositoryImpl()
 
-    private val repositories: MutableLiveData<List<Repository>> = MutableLiveData()
-    private val selectedRepository: MutableLiveData<Repository> = MutableLiveData()
+    val repositories: MutableLiveData<List<Repository>> = MutableLiveData()
+    val selectedRepository: MutableLiveData<Repository> = MutableLiveData()
 
 
-    fun getRepositories(query: String) : LiveData<List<Repository>> {
-        loadRepositories(query)
-        return repositories
-    }
-
-    fun getSelectedRepository() : LiveData<Repository> {
-        return selectedRepository
-    }
-
-    private fun loadRepositories(query: String) {
-        repositoryRepository.getRepositories(query).subscribe(
-            { repoList -> repositories.postValue(repoList)},
-            { error -> Log.e("callError", error.message ?: "") }
-        )
+    fun submitQuery(query: String) {
+        if(query.isNotBlank()) {
+            repositoryRepository.getRepositories(query).subscribe(
+                { repoList -> repositories.postValue(repoList)},
+                { error -> Log.e("callError", error.message ?: "") }
+            )
+        } else {
+            repositories.postValue(emptyList())
+        }
     }
 
     fun setSelectedRepository(repository: Repository) {

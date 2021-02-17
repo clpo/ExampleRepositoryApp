@@ -22,12 +22,6 @@ context: Context, attrs: AttributeSet? = null
         queryField.addTextChangedListener(
             onTextChanged = { text, start, before, count ->
                 inputSubject.onNext(text.toString())
-            },
-            beforeTextChanged = {text, start, count, after ->
-
-            },
-            afterTextChanged = {
-
             }
         )
     }

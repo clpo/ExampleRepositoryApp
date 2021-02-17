@@ -34,8 +34,9 @@ class RepositoryList : Fragment() {
         view?.let {
             val searchBar = it.findViewById<SearchBar>(R.id.search_bar)
             searchBar.inputSubject
+                .debounce(200, TimeUnit.MILLISECONDS)
                 .subscribe { text ->
-                    viewModel.getRepositories(text)
+                    viewModel.submitQuery(text ?: "")
                 }
         }
     }
@@ -55,8 +56,14 @@ class RepositoryList : Fragment() {
         repositoryListView?.let {
             it.adapter = adapter
         }
-        viewModel.getRepositories("rx").observe(viewLifecycleOwner, Observer {
-            adapter.submitList(it)
+        adapter.submitList(listOf(RepositoryListViewModelEmpty()))
+
+        viewModel.repositories.observe(viewLifecycleOwner, Observer { repositories ->
+            if(repositories.isNullOrEmpty()) {
+                adapter.submitList(listOf(RepositoryListViewModelEmpty()))
+            } else {
+                adapter.submitList(repositories.map { repository -> RepositoryListViewModelItem(repository) })
+            }
         })
     }
 }
