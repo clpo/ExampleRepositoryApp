@@ -5,13 +5,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.examplerepositoryapp.R
-import com.example.examplerepositoryapp.repository_feature.domain.Repository
 
 class RepositoryList : Fragment() {
+
+    private val viewModel: RepositoryViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -25,26 +27,23 @@ class RepositoryList : Fragment() {
         setupAdapter()
     }
 
-    private fun navigateToDetails(repository: Repository) {
-        val bundle: Bundle = Bundle().apply {
-            this.putSerializable("repository", repository)
-        }
-        findNavController().navigate(R.id.repositoryDetails, bundle)
+    private fun navigateToDetails() {
+        findNavController().navigate(R.id.repositoryDetails)
     }
 
     private fun setupAdapter() {
-        val repositoriesAdapter : RepositoriesAdapter = RepositoriesAdapter(
-            onItemSelected =  { repository -> navigateToDetails(repository) }
+        val repositoriesAdapter = RepositoriesAdapter(
+            onItemSelected =  { repository ->
+                viewModel.setSelectedRepository(repository)
+                navigateToDetails()
+            }
         )
-        val repositoryListView : RecyclerView? = view?.findViewById<RecyclerView>(R.id.repositories)
+        val repositoryListView: RecyclerView? = view?.findViewById(R.id.repositories)
         repositoryListView?.let {
             it.adapter = repositoriesAdapter
         }
-        val repoList = listOf(
-            Repository(id = 1234, name = "Repo 1", description = "This is a repo"),
-            Repository(id = 1235, name = "Repo 2", description = "This is a repo"),
-            Repository(id = 1236, name = "Repo 3", description = "This is a repo")
-        )
-        repositoriesAdapter.submitList(repoList)
+        viewModel.getRepositories().observe(viewLifecycleOwner, Observer {
+            repositoriesAdapter.submitList(it)
+        })
     }
 }

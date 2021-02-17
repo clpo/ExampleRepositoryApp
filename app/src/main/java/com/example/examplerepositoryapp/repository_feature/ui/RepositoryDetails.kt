@@ -6,21 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import com.example.examplerepositoryapp.R
 import com.example.examplerepositoryapp.repository_feature.domain.Repository
 
-private const val ARG_KEY = "repository"
-
 class RepositoryDetails : Fragment() {
 
-    lateinit var repository: Repository
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            repository = it.getSerializable(ARG_KEY) as Repository
-        }
-    }
+    private val viewModel: RepositoryViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,8 +24,8 @@ class RepositoryDetails : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val name = repository.name
-        val description = repository.description
-        view.findViewById<TextView>(R.id.name).text = name
+        viewModel.getSelectedRepository().observe(viewLifecycleOwner, Observer { repository ->
+            view.findViewById<TextView>(R.id.name).text = repository.name
+        })
     }
 }
