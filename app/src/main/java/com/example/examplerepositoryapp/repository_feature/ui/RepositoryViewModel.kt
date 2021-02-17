@@ -18,8 +18,8 @@ class RepositoryViewModel : ViewModel() {
     private val selectedRepository: MutableLiveData<Repository> = MutableLiveData()
 
 
-    fun getRepositories() : LiveData<List<Repository>> {
-        loadRepositories()
+    fun getRepositories(query: String) : LiveData<List<Repository>> {
+        loadRepositories(query)
         return repositories
     }
 
@@ -27,8 +27,8 @@ class RepositoryViewModel : ViewModel() {
         return selectedRepository
     }
 
-    private fun loadRepositories() {
-        repositoryRepository.getRepositories().subscribe(
+    private fun loadRepositories(query: String) {
+        repositoryRepository.getRepositories(query).subscribe(
             { repoList -> repositories.postValue(repoList)},
             { error -> Log.e("callError", error.message ?: "") }
         )

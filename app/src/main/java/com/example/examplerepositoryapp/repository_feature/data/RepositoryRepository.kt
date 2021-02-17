@@ -7,15 +7,15 @@ import io.reactivex.rxjava3.core.Single
 //I know this is a silly name but it's correct, it is a repo for repo's
 
 interface RepositoryRepository {
-    fun getRepositories(): Single<List<Repository>>
+    fun getRepositories(query: String): Single<List<Repository>>
 }
 
 class RepositoryRepositoryImpl: RepositoryRepository {
 
     private val service: RepositoryService = RetrofitClientInstance.retrofitInstance!!.create(RepositoryService::class.java)
 
-    override fun getRepositories(): Single<List<Repository>> {
-        return service.getRepositories(query = "Rx").map {
+    override fun getRepositories(query: String): Single<List<Repository>> {
+        return service.getRepositories(query = query).map {
             it.items.map { repository ->
                 repository.fromDto()
             }

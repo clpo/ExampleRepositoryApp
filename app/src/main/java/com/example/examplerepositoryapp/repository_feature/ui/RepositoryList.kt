@@ -10,10 +10,12 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.examplerepositoryapp.R
+import java.util.concurrent.TimeUnit
 
 class RepositoryList : Fragment() {
 
     private val viewModel: RepositoryViewModel by activityViewModels()
+    lateinit var adapter: RepositoriesAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -25,6 +27,17 @@ class RepositoryList : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupAdapter()
+        setupSearch()
+    }
+
+    private fun setupSearch() {
+        view?.let {
+            val searchBar = it.findViewById<SearchBar>(R.id.search_bar)
+            searchBar.inputSubject
+                .subscribe { text ->
+                    viewModel.getRepositories(text)
+                }
+        }
     }
 
     private fun navigateToDetails() {
@@ -32,7 +45,7 @@ class RepositoryList : Fragment() {
     }
 
     private fun setupAdapter() {
-        val repositoriesAdapter = RepositoriesAdapter(
+        adapter = RepositoriesAdapter(
             onItemSelected =  { repository ->
                 viewModel.setSelectedRepository(repository)
                 navigateToDetails()
@@ -40,10 +53,10 @@ class RepositoryList : Fragment() {
         )
         val repositoryListView: RecyclerView? = view?.findViewById(R.id.repositories)
         repositoryListView?.let {
-            it.adapter = repositoriesAdapter
+            it.adapter = adapter
         }
-        viewModel.getRepositories().observe(viewLifecycleOwner, Observer {
-            repositoriesAdapter.submitList(it)
+        viewModel.getRepositories("rx").observe(viewLifecycleOwner, Observer {
+            adapter.submitList(it)
         })
     }
 }
