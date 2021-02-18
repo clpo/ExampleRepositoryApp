@@ -1,6 +1,7 @@
 package com.example.examplerepositoryapp.repository_feature.data
 
 import com.example.examplerepositoryapp.repository_feature.domain.Repository
+import com.example.examplerepositoryapp.repository_feature.domain.RepositoryReadme
 import com.google.gson.annotations.SerializedName
 import java.time.LocalDateTime
 
@@ -15,8 +16,19 @@ class RepositoryDto(
     @SerializedName("updated_at") val updatedAt: LocalDateTime?,
     @SerializedName("language") val language: String?,
     @SerializedName("forks") val forksCount: Int?,
-    @SerializedName("open_issues") val openIssuesCount: Int?
+    @SerializedName("open_issues") val openIssuesCount: Int?,
+    @SerializedName("owner") val owner: RepositoryOwnerDto?
 )
+
+class RepositoryOwnerDto(
+    @SerializedName("login") val login: String?
+)
+
+class ReadmeDto(
+    @SerializedName("html_url") val htmlUrl: String?
+)
+
+fun ReadmeDto.fromDto(): RepositoryReadme = RepositoryReadme(this.htmlUrl ?: "")
 
 fun RepositoryDto.fromDto(): Repository =
     Repository(
@@ -29,7 +41,8 @@ fun RepositoryDto.fromDto(): Repository =
         this.updatedAt ?: LocalDateTime.now(),
         this.language ?: "",
         this.forksCount ?: 0,
-        this.openIssuesCount ?: 0
+        this.openIssuesCount ?: 0,
+        this.owner?.login ?: ""
     )
 
 class RepositoryCollectionDto(

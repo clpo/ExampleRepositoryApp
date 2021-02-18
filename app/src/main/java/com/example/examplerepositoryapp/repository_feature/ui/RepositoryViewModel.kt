@@ -1,12 +1,12 @@
 package com.example.examplerepositoryapp.repository_feature.ui
 
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.examplerepositoryapp.repository_feature.data.RepositoryRepository
 import com.example.examplerepositoryapp.repository_feature.data.RepositoryRepositoryImpl
 import com.example.examplerepositoryapp.repository_feature.domain.Repository
+import com.example.examplerepositoryapp.repository_feature.domain.RepositoryReadme
 
 
 class RepositoryViewModel : ViewModel() {
@@ -16,12 +16,15 @@ class RepositoryViewModel : ViewModel() {
 
     val repositories: MutableLiveData<List<Repository>> = MutableLiveData()
     val selectedRepository: MutableLiveData<Repository> = MutableLiveData()
+    val repositoryReadme: MutableLiveData<RepositoryReadme> = MutableLiveData()
 
 
     fun submitQuery(query: String) {
         if(query.isNotBlank()) {
             repositoryRepository.getRepositories(query).subscribe(
-                { repoList -> repositories.postValue(repoList)},
+                { repoList ->
+                    repositories.postValue(repoList)
+                },
                 { error -> Log.e("callError", error.message ?: "") }
             )
         } else {
@@ -31,6 +34,14 @@ class RepositoryViewModel : ViewModel() {
 
     fun setSelectedRepository(repository: Repository) {
         selectedRepository.postValue(repository)
+        fetchRepositoryReadme(repository.ownerLogin, repository.name)
+    }
+
+    private fun fetchRepositoryReadme(owner: String, repoName: String) {
+        repositoryRepository.getReadme(owner, repoName).subscribe(
+            { readme -> repositoryReadme.postValue(readme) },
+            { error -> Log.e("callError", error.message ?: "") }
+        )
     }
 
 }

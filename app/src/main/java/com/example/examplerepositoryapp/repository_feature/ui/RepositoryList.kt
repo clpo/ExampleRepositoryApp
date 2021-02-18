@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.examplerepositoryapp.R
 import java.util.concurrent.TimeUnit
 
+//Displays a list of Repository's based on query parameters
 class RepositoryList : Fragment() {
 
     private val viewModel: RepositoryViewModel by activityViewModels()
@@ -58,7 +59,7 @@ class RepositoryList : Fragment() {
         }
         adapter.submitList(listOf(RepositoryListViewModelEmpty()))
 
-        viewModel.repositories.observe(viewLifecycleOwner, Observer { repositories ->
+        viewModel.repositories.observe(viewLifecycleOwner, { repositories ->
             if(repositories.isNullOrEmpty()) {
                 adapter.submitList(listOf(RepositoryListViewModelEmpty()))
             } else {

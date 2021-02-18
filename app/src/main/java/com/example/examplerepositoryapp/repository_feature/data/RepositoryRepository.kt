@@ -1,6 +1,7 @@
 package com.example.examplerepositoryapp.repository_feature.data
 
 import com.example.examplerepositoryapp.repository_feature.domain.Repository
+import com.example.examplerepositoryapp.repository_feature.domain.RepositoryReadme
 import com.example.examplerepositoryapp.retrofit.RetrofitClientInstance
 import io.reactivex.rxjava3.core.Single
 
@@ -8,6 +9,7 @@ import io.reactivex.rxjava3.core.Single
 
 interface RepositoryRepository {
     fun getRepositories(query: String): Single<List<Repository>>
+    fun getReadme(owner: String, repoName: String): Single<RepositoryReadme>
 }
 
 class RepositoryRepositoryImpl: RepositoryRepository {
@@ -19,6 +21,12 @@ class RepositoryRepositoryImpl: RepositoryRepository {
             it.items.map { repository ->
                 repository.fromDto()
             }
+        }
+    }
+
+    override fun getReadme(owner: String, repoName: String): Single<RepositoryReadme> {
+        return service.getReadme(owner = owner, repoName = repoName).map {
+            it.fromDto()
         }
     }
 }

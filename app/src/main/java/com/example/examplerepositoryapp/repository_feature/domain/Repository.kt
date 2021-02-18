@@ -13,5 +13,10 @@ class Repository(
     val updatedAt: LocalDateTime,
     val language: String,
     val forksCount: Int,
-    val openIssuesCount: Int
+    val openIssuesCount: Int,
+    val ownerLogin: String
+)
+
+class RepositoryReadme(
+    val webUrl: String
 )
