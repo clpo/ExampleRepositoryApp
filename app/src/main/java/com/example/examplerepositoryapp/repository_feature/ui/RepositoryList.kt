@@ -11,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.examplerepositoryapp.R
+import io.reactivex.rxjava3.core.Observable
 import java.util.concurrent.TimeUnit
 
 //Displays a list of Repository's based on query parameters
@@ -39,9 +40,12 @@ class RepositoryList : Fragment() {
                 searchBar.findViewById<ProgressBar>(R.id.progress_bar).visibility = if(isLoading) View.VISIBLE else View.GONE
             })
             searchBar.inputSubject
-                .debounce(200, TimeUnit.MILLISECONDS)
+                .publish { ob ->
+                    ob.buffer(ob.debounce(300, TimeUnit.MILLISECONDS))
+                        .takeUntil(ob.ignoreElements().toObservable<String>()) }
                 .subscribe { text ->
-                    viewModel.submitQuery(text ?: "")
+                    val textItem = (text as ArrayList<String?>).last()
+                    viewModel.submitQuery(textItem ?: "")
                 }
         }
     }
