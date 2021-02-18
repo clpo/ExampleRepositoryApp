@@ -30,24 +30,29 @@ class RepositoryDetails : Fragment() {
     }
 
     private fun initialiseViews(view: View) {
+        val noDataText = getString(R.string.no_data)
         //Would use data binding here instead
         viewModel.selectedRepository.observe(viewLifecycleOwner, { repository ->
-            view.findViewById<TextView>(R.id.name).text = repository.name
-            view.findViewById<TextView>(R.id.description).text = repository.description
+            view.findViewById<TextView>(R.id.name).text = if(repository.name.isNotEmpty()) repository.name else noDataText
+            view.findViewById<TextView>(R.id.description).text = if(repository.description.isNotEmpty()) repository.description else noDataText
             view.findViewById<TextView>(R.id.is_private).text = if(repository.isPrivate) getString(R.string.yes) else getString(R.string.no)
-            view.findViewById<TextView>(R.id.link).text = repository.githubLink
+            view.findViewById<TextView>(R.id.link).text = if(repository.githubLink.isNotEmpty()) repository.githubLink else noDataText
             view.findViewById<TextView>(R.id.created_date).text = repository.createdAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
             view.findViewById<TextView>(R.id.updated_date).text = repository.updatedAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
-            view.findViewById<TextView>(R.id.language).text = repository.language
+            view.findViewById<TextView>(R.id.language).text = if(repository.language.isNotEmpty()) repository.language else noDataText
             view.findViewById<TextView>(R.id.forks).text = repository.forksCount.toString()
             view.findViewById<TextView>(R.id.open_issues).text = repository.openIssuesCount.toString()
 
         })
         viewModel.repositoryReadme.observe(viewLifecycleOwner, { repositoryReadme ->
-            val readMeButton = view.findViewById<Button>(R.id.readme_button)
-            readMeButton.text = getString(R.string.view_readme)
-            readMeButton.setOnClickListener {
-                (activity as Host).openWebBrowser(repositoryReadme.webUrl)
+            if(repositoryReadme.webUrl.isNotBlank()) {
+                val readMeButton = view.findViewById<Button>(R.id.readme_button)
+                readMeButton.text = getString(R.string.view_readme)
+                readMeButton.visibility = View.VISIBLE
+                view.findViewById<TextView>(R.id.readme_title).visibility = View.VISIBLE
+                readMeButton.setOnClickListener {
+                    (activity as Host).openWebBrowser(repositoryReadme.webUrl)
+                }
             }
         })
     }

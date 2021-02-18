@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -34,6 +35,9 @@ class RepositoryList : Fragment() {
     private fun setupSearch() {
         view?.let {
             val searchBar = it.findViewById<SearchBar>(R.id.search_bar)
+            viewModel.isLoading.observe(viewLifecycleOwner, { isLoading ->
+                searchBar.findViewById<ProgressBar>(R.id.progress_bar).visibility = if(isLoading) View.VISIBLE else View.GONE
+            })
             searchBar.inputSubject
                 .debounce(200, TimeUnit.MILLISECONDS)
                 .subscribe { text ->

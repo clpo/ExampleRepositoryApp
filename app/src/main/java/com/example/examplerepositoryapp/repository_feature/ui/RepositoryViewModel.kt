@@ -17,13 +17,16 @@ class RepositoryViewModel : ViewModel() {
     val repositories: MutableLiveData<List<Repository>> = MutableLiveData()
     val selectedRepository: MutableLiveData<Repository> = MutableLiveData()
     val repositoryReadme: MutableLiveData<RepositoryReadme> = MutableLiveData()
+    val isLoading: MutableLiveData<Boolean> = MutableLiveData()
 
 
     fun submitQuery(query: String) {
         if(query.isNotBlank()) {
+            isLoading.postValue(true)
             repositoryRepository.getRepositories(query).subscribe(
                 { repoList ->
                     repositories.postValue(repoList)
+                    isLoading.postValue(false)
                 },
                 { error -> Log.e("callError", error.message ?: "") }
             )
@@ -34,6 +37,7 @@ class RepositoryViewModel : ViewModel() {
 
     fun setSelectedRepository(repository: Repository) {
         selectedRepository.postValue(repository)
+        repositoryReadme.postValue(RepositoryReadme(""))
         fetchRepositoryReadme(repository.ownerLogin, repository.name)
     }
 
